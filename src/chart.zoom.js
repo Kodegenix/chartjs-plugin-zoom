@@ -10,6 +10,8 @@ var Chart = require('chart.js');
 Chart = typeof(Chart) === 'function' ? Chart : window.Chart;
 var helpers = Chart.helpers;
 
+var moment = require('moment')
+
 // Take the zoom namespace of Chart
 var zoomNS = Chart.Zoom = Chart.Zoom || {};
 
@@ -122,8 +124,14 @@ function zoomTimeScale(scale, zoom, center, zoomOptions) {
 	var minDelta = newDiff * min_percent;
 	var maxDelta = newDiff * max_percent;
 
-	options.time.min = rangeMinLimiter(zoomOptions, scale.getValueForPixel(scale.getPixelForValue(scale.firstTick) + minDelta));
-	options.time.max = rangeMaxLimiter(zoomOptions, scale.getValueForPixel(scale.getPixelForValue(scale.lastTick) - maxDelta));
+	var firstTick = moment.unix(scale.min);
+	var lastTick = moment.unix(scale.max);
+
+	console.log('min: ' + firstTick);
+	console.log('max: ' + lastTick);
+
+	options.time.min = rangeMinLimiter(zoomOptions, scale.getValueForPixel(scale.getPixelForValue(firstTick) + minDelta));
+	options.time.max = rangeMaxLimiter(zoomOptions, scale.getValueForPixel(scale.getPixelForValue(lastTick) - maxDelta));
 }
 
 function zoomNumericalScale(scale, zoom, center, zoomOptions) {
@@ -182,7 +190,7 @@ function doZoom(chartInstance, zoom, center) {
 function panIndexScale(scale, delta, panOptions) {
 	var labels = scale.chart.data.labels;
 	var lastLabelIndex = labels.length - 1;
-	var offsetAmt = Math.max(scale.ticks.length, 1);
+	var offsetAmt = Math.max((scale.ticks.length - ((scale.options.gridLines.offsetGridLines) ? 0 : 1)), 1);
 	var panSpeed = panOptions.speed;
 	var minIndex = scale.minIndex;
 	var step = Math.round(scale.width / (offsetAmt * panSpeed));
