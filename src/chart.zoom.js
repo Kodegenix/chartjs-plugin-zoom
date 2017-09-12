@@ -124,11 +124,8 @@ function zoomTimeScale(scale, zoom, center, zoomOptions) {
 	var minDelta = newDiff * min_percent;
 	var maxDelta = newDiff * max_percent;
 
-	var firstTick = moment.unix(scale.min);
-	var lastTick = moment.unix(scale.max);
-
-	console.log('min: ' + firstTick);
-	console.log('max: ' + lastTick);
+	var firstTick = moment.unix(scale._ticks[0].value);
+	var lastTick = moment.unix(scale._ticks[scale._ticks.length - 1].value);
 
 	options.time.min = rangeMinLimiter(zoomOptions, scale.getValueForPixel(scale.getPixelForValue(firstTick) + minDelta));
 	options.time.max = rangeMaxLimiter(zoomOptions, scale.getValueForPixel(scale.getPixelForValue(lastTick) - maxDelta));
