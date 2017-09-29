@@ -10,6 +10,8 @@ var Chart = require('chart.js');
 Chart = typeof(Chart) === 'function' ? Chart : window.Chart;
 var helpers = Chart.helpers;
 
+var moment = require('moment')
+
 // Take the zoom namespace of Chart
 var zoomNS = Chart.Zoom = Chart.Zoom || {};
 
@@ -122,8 +124,11 @@ function zoomTimeScale(scale, zoom, center, zoomOptions) {
 	var minDelta = newDiff * min_percent;
 	var maxDelta = newDiff * max_percent;
 
-	options.time.min = rangeMinLimiter(zoomOptions, scale.getValueForPixel(scale.getPixelForValue(scale.firstTick) + minDelta));
-	options.time.max = rangeMaxLimiter(zoomOptions, scale.getValueForPixel(scale.getPixelForValue(scale.lastTick) - maxDelta));
+  var firstTick = moment.unix(scale.min / 1000);
+  var lastTick = moment.unix(scale.max / 1000);
+
+	options.time.min = rangeMinLimiter(zoomOptions, scale.getValueForPixel(scale.getPixelForValue(firstTick) + minDelta));
+	options.time.max = rangeMaxLimiter(zoomOptions, scale.getValueForPixel(scale.getPixelForValue(lastTick) - maxDelta));
 }
 
 function zoomNumericalScale(scale, zoom, center, zoomOptions) {
@@ -201,8 +206,10 @@ function panIndexScale(scale, delta, panOptions) {
 
 function panTimeScale(scale, delta, panOptions) {
 	var options = scale.options;
-	options.time.min = rangeMinLimiter(panOptions, scale.getValueForPixel(scale.getPixelForValue(scale.firstTick) - delta));
-	options.time.max = rangeMaxLimiter(panOptions, scale.getValueForPixel(scale.getPixelForValue(scale.lastTick) - delta));
+  var firstTick = moment.unix(scale.min / 1000);
+  var lastTick = moment.unix(scale.max / 1000);
+	options.time.min = rangeMinLimiter(panOptions, scale.getValueForPixel(scale.getPixelForValue(firstTick) - delta));
+	options.time.max = rangeMaxLimiter(panOptions, scale.getValueForPixel(scale.getPixelForValue(lastTick) - delta));
 }
 
 function panNumericalScale(scale, delta, panOptions) {
